@@ -1,6 +1,6 @@
 # local-git-mcp
 
-A local MCP server that queries local git branches so you can generate standup updates from work that hasn't yet been merged to your main branch.
+A local MCP server that queries local git branches--so you can generate standup updates from work that hasn't yet been merged to your team's main branch yet.
 
 ## Why
 
