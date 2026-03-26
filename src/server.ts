@@ -5,6 +5,12 @@ import * as path from 'path'
 import { readConfig, addRepo, removeRepo, setLookback } from './config'
 import { getActivityForTicket, getRecentActivity, formatActivityResult } from './git'
 
+function resolveRepoFilter(requested: string[], configured: string[]): string[] {
+  return configured.filter(r =>
+    requested.includes(r) || requested.includes(path.basename(r))
+  )
+}
+
 export async function startServer(): Promise<void> {
   const server = new McpServer({
     name: 'local-git-mcp',
@@ -24,7 +30,7 @@ export async function startServer(): Promise<void> {
           'Number of days to look back for commits. Defaults to the configured default (usually 1).'
         ),
         repos: z.array(z.string()).optional().describe(
-          'Limit search to these repository paths. Must be paths already configured in local-git-mcp. Defaults to all configured repos.'
+          'Limit search to these repositories. Each entry may be a full path or just the directory name (e.g. "my-project"). Must match repos already configured in local-git-mcp. Defaults to all configured repos.'
         ),
       },
     },
@@ -42,7 +48,7 @@ export async function startServer(): Promise<void> {
       }
 
       const targetRepos = repos && repos.length > 0
-        ? config.repos.filter(r => repos.includes(r))
+        ? resolveRepoFilter(repos, config.repos)
         : config.repos
 
       if (targetRepos.length === 0) {
@@ -75,7 +81,7 @@ export async function startServer(): Promise<void> {
           'Number of days to look back for commits. Defaults to the configured default (usually 1).'
         ),
         repos: z.array(z.string()).optional().describe(
-          'Limit search to these repository paths. Must be paths already configured in local-git-mcp. Defaults to all configured repos.'
+          'Limit search to these repositories. Each entry may be a full path or just the directory name (e.g. "my-project"). Must match repos already configured in local-git-mcp. Defaults to all configured repos.'
         ),
       },
     },
@@ -93,7 +99,7 @@ export async function startServer(): Promise<void> {
       }
 
       const targetRepos = repos && repos.length > 0
-        ? config.repos.filter(r => repos.includes(r))
+        ? resolveRepoFilter(repos, config.repos)
         : config.repos
 
       if (targetRepos.length === 0) {
