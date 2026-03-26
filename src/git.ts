@@ -59,10 +59,14 @@ async function getBranchesForRepo(
   ticketId?: string
 ): Promise<string[]> {
   const raw = await sg.raw(['branch', '--format=%(refname:short)'])
-  const branches = raw
+  const lines = raw
     .split('\n')
     .map(b => b.trim())
     .filter(b => b.length > 0)
+
+  const isDetached = lines.some(b => b.startsWith('(HEAD detached'))
+  const branches = lines.filter(b => !b.startsWith('(HEAD detached'))
+  if (isDetached) branches.unshift('HEAD')
 
   if (!ticketId) return branches
 
