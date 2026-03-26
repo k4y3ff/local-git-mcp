@@ -1,7 +1,7 @@
 import { Command } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
-import { readConfig, writeConfig, addRepo, removeRepo, getPidPath } from './config'
+import { readConfig, addRepo, removeRepo, setLookback, getPidPath } from './config'
 import { startServer } from './server'
 
 const program = new Command()
@@ -63,9 +63,13 @@ program
       console.error('Error: days must be a positive integer')
       process.exit(1)
     }
-    const config = readConfig()
-    writeConfig({ ...config, defaultLookbackDays: days })
-    console.log(`Default lookback set to ${days} day(s)`)
+    try {
+      setLookback(days)
+      console.log(`Default lookback set to ${days} day(s)`)
+    } catch (e) {
+      console.error(`Error: ${(e as Error).message}`)
+      process.exit(1)
+    }
   })
 
 program

@@ -65,3 +65,12 @@ export function removeRepo(repoPath: string): void {
   config.repos = config.repos.filter(r => r !== resolved)
   writeConfig(config)
 }
+
+export function setLookback(days: number): void {
+  if (!Number.isInteger(days) || days < 1) {
+    throw new Error(`days must be a positive integer, got: ${days}`)
+  }
+  const config = readConfig()
+  config.defaultLookbackDays = days
+  writeConfig(config)
+}

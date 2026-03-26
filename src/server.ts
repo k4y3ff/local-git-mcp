@@ -2,7 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import * as z from 'zod/v4'
 import * as path from 'path'
-import { readConfig, addRepo, removeRepo } from './config'
+import { readConfig, addRepo, removeRepo, setLookback } from './config'
 import { getActivityForTicket, getRecentActivity, formatActivityResult } from './git'
 
 export async function startServer(): Promise<void> {
@@ -148,6 +148,32 @@ export async function startServer(): Promise<void> {
       removeRepo(repoPath)
       return {
         content: [{ type: 'text' as const, text: `Removed repository: ${path.resolve(repoPath)}` }],
+      }
+    }
+  )
+
+  server.registerTool(
+    'set_default_lookback',
+    {
+      description:
+        'Set the default lookback period used by get_git_activity_for_ticket and get_recent_git_activity when no lookback_days is specified.',
+      inputSchema: {
+        days: z.number().int().positive().describe(
+          'Number of days to use as the default lookback period. Must be a positive integer.'
+        ),
+      },
+    },
+    async ({ days }) => {
+      try {
+        setLookback(days)
+        return {
+          content: [{ type: 'text' as const, text: `Default lookback set to ${days} day${days === 1 ? '' : 's'}.` }],
+        }
+      } catch (e) {
+        return {
+          content: [{ type: 'text' as const, text: `Error: ${(e as Error).message}` }],
+          isError: true,
+        }
       }
     }
   )
