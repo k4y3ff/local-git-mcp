@@ -122,6 +122,8 @@ Searches all configured repos for branches whose name contains the given Jira ti
 
 Returns all commits across all configured repos and branches within the lookback window, with no ticket filter. Good for a general standup summary.
 
+> **Note:** These two tools overlap intentionally. An LLM calling a tool named `get_recent_git_activity` with a `ticket_id` parameter would have to reason about whether to pass that parameter; a dedicated `get_git_activity_for_ticket` tool makes the intent unambiguous. Keeping them separate improves tool selection reliability when the model knows a ticket ID.
+
 | Parameter | Type | Required | Description |
 |---|---|---|---|
 | `lookback_days` | number | no | Days to look back. Defaults to configured value (default: 1). |
