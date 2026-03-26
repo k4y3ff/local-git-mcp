@@ -74,9 +74,12 @@ export async function startServer(): Promise<void> {
         lookback_days: z.number().optional().describe(
           'Number of days to look back for commits. Defaults to the configured default (usually 1).'
         ),
+        repos: z.array(z.string()).optional().describe(
+          'Limit search to these repository paths. Must be paths already configured in local-git-mcp. Defaults to all configured repos.'
+        ),
       },
     },
-    async ({ lookback_days }) => {
+    async ({ lookback_days, repos }) => {
       const config = readConfig()
       const days = lookback_days ?? config.defaultLookbackDays
 
@@ -89,8 +92,24 @@ export async function startServer(): Promise<void> {
         }
       }
 
-      const result = await getRecentActivity(days, config.repos)
-      const header = `Recent git activity (last ${days} day${days === 1 ? '' : 's'}):`
+      const targetRepos = repos && repos.length > 0
+        ? config.repos.filter(r => repos.includes(r))
+        : config.repos
+
+      if (targetRepos.length === 0) {
+        return {
+          content: [{
+            type: 'text' as const,
+            text: `None of the specified repos are configured. Use list_configured_repos to see available repositories.`,
+          }],
+        }
+      }
+
+      const result = await getRecentActivity(days, targetRepos)
+      const repoScope = targetRepos.length < config.repos.length
+        ? `, ${targetRepos.length} repo${targetRepos.length === 1 ? '' : 's'}`
+        : ''
+      const header = `Recent git activity (last ${days} day${days === 1 ? '' : 's'}${repoScope}):`
       return {
         content: [{ type: 'text' as const, text: formatActivityResult(result, header) }],
       }
