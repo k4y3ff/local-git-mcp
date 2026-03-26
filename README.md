@@ -116,6 +116,7 @@ Searches all configured repos for branches whose name contains the given Jira ti
 |---|---|---|---|
 | `ticket_id` | string | yes | Jira ticket ID, e.g. `PROJ-123`. Case-insensitive substring match on branch names. |
 | `lookback_days` | number | no | Days to look back. Defaults to configured value (default: 1). |
+| `repos` | string[] | no | Limit search to these repo paths. Must be paths already configured in local-git-mcp. Defaults to all configured repos. |
 
 ### `get_recent_git_activity`
 
@@ -144,6 +145,14 @@ Unregisters a repository path. Equivalent to `local-git-mcp remove <path>`.
 | Parameter | Type | Required | Description |
 |---|---|---|---|
 | `path` | string | yes | Path to remove. |
+
+### `set_default_lookback`
+
+Sets the default lookback period used when `lookback_days` is not specified. Equivalent to `local-git-mcp set-lookback <days>`.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `days` | integer | yes | Number of days to use as the default lookback period. Must be a positive integer. |
 
 ## Configuration
 
