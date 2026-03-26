@@ -125,6 +125,7 @@ Returns all commits across all configured repos and branches within the lookback
 | Parameter | Type | Required | Description |
 |---|---|---|---|
 | `lookback_days` | number | no | Days to look back. Defaults to configured value (default: 1). |
+| `repos` | string[] | no | Limit search to these repo paths. Must be paths already configured in local-git-mcp. Defaults to all configured repos. |
 
 ### `list_configured_repos`
 
